@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Make Up Recommender</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="startup_act_takephoto_button">Take A Photo</string>
+    <string name="title_activity_camera_intent_fragment">CameraIntentFragment</string>
+
+    <string name="activity_camera_intent_start_camera_button">Take a picture!</string>
+    <string name="activity_camera_intent_image_view_desc">Photo</string>
+    <string name="activity_camera_intent_photo_uri_found">Photo uri found: </string>
+    <string name="activity_camera_intent_photo_uri_not_found">Photo uri not found!</string>
+    <string name="warning_camera_intent_canceled">Camera Intent was canceled by user.</string>
+    <string name="error_sd_card_not_mounted">External storage is required. Your SD card is most likely not mounted.</string>
+    <string name="error_could_not_take_photo">There was an issue with your camera. We are very sorry for the inconvenience!</string>
+    <string name="error_sth_went_wrong">Something went wrong. Please try again.</string>
+    <string name="title_activity_face_profile">FaceProfileActivity</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_styles">Styles Activity</string>
+</resources>
