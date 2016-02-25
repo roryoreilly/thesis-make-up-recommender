@@ -15,14 +15,12 @@ import roryoreilly.makeuprecommender.R;
  */
 public class StylesListAdapter extends ArrayAdapter<String> {
     private final Activity context;
-    private final String[] title;
     private final Integer[] imgid;
 
-    public StylesListAdapter(Activity context, String[] title, Integer[] imgid) {
-        super(context, R.layout.profile_list, title);
+    public StylesListAdapter(Activity context, Integer[] imgid) {
+        super(context, R.layout.profile_list);
 
         this.context = context;
-        this.title = title;
         this.imgid = imgid;
     }
 
@@ -30,12 +28,9 @@ public class StylesListAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = context.getLayoutInflater();
         View rowView = inflater.inflate(R.layout.style_list, null,true);
 
-        TextView txtTitle = (TextView) rowView.findViewById(R.id.classifier_name);
-        ImageView imageView = (ImageView) rowView.findViewById(R.id.classifier_icon);
+        ImageView imageView = (ImageView) rowView.findViewById(R.id.styleImageButton);
 
-        txtTitle.setText(title[position]);
         imageView.setImageResource(imgid[position]);
         return rowView;
-
-    };
+    }
 }

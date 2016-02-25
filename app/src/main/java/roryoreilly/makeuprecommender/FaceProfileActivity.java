@@ -33,9 +33,8 @@ import roryoreilly.makeuprecommender.Classifier.FaceDetect;
 import roryoreilly.makeuprecommender.Classifier.UserProfile;
 import roryoreilly.makeuprecommender.Fragments.LoaderFragment;
 import roryoreilly.makeuprecommender.View.ProfileListAdapter;
-import roryoreilly.makeuprecommender.utils.BitmapHelper;
 
-public class FaceProfileActivity extends FragmentActivity
+public class FaceProfileActivity extends Activity
         implements LoaderFragment.OnFragmentInteractionListener{
     public static final String EXTRA_IMAGE_BYTE = "faceprofileactivity.extra.image";
     public static final String EXTRA_IMAGE_URI = "faceprofileactivity.extra.uri";
@@ -65,8 +64,12 @@ public class FaceProfileActivity extends FragmentActivity
         // places the loading fragment over the screen while the data is collected
         fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
         LoaderFragment loaderFragment = new LoaderFragment();
-        fragmentTransaction.add(loaderFragment, LOADER_FRAG);
+        Bundle bundle = new Bundle();
+        bundle.putInt("bundle_image", 0);
+        loaderFragment.setArguments(bundle);
+        fragmentTransaction.add(android.R.id.content, loaderFragment, LOADER_FRAG);
         fragmentTransaction.commit();
 
 //        byte[] imgByte = getIntent().getExtras().getByteArray(EXTRA_IMAGE_BYTE);
@@ -92,7 +95,7 @@ public class FaceProfileActivity extends FragmentActivity
         //you can leave it empty
     }
 
-    private class FaceClassify extends AsyncTask<Bitmap, Void, FaceDetect> {
+    private class FaceClassify extends AsyncTask<Bitmap, Integer, FaceDetect> {
         Activity activity;
         LoaderFragment loaderFragment;
 
@@ -105,12 +108,45 @@ public class FaceProfileActivity extends FragmentActivity
         // Places the loading screen over the activity
         @Override
         protected void onPreExecute() {
-
         }
 
         // classifies the face
         @Override
         protected FaceDetect doInBackground(Bitmap... data) {
+            new Thread() {
+                public void run() {
+                    int i =0;
+                    while(true) {
+                        publishProgress(i);
+                        i++;
+                        if(i>37) i=0;
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }.start();
+
+
+//            new Runnable() {
+//                public void run() {
+//                    int i =0;
+//                    while(true) {
+//                        publishProgress(i);
+//                        i++;
+//                        if(i>37) i=0;
+//                        try {
+//                            Thread.sleep(100);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//            }.run();
+
+
             Bitmap img = data[0];
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             float scale = Math.min(1, Math.min(600f / img.getWidth(), 600f / img.getHeight()));
@@ -149,8 +185,6 @@ public class FaceProfileActivity extends FragmentActivity
                 e.printStackTrace();
                 return null;
             }
-
-
         }
 
         @Override
@@ -167,17 +201,17 @@ public class FaceProfileActivity extends FragmentActivity
             list.setAdapter(adapter);
 
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.remove(loaderFragment);
+            fragmentTransaction.remove(fragmentManager.findFragmentByTag(LOADER_FRAG));
             fragmentTransaction.commit();
 
             stylesButton.setOnClickListener(
                     new Button.OnClickListener() {
                         public void onClick(View v) {
                             Intent intent = new Intent(v.getContext(), StylesActivity.class);
-                            intent.putExtra("skin", userProfileSummary[0]);
-                            intent.putExtra("eye", userProfileSummary[1]);
-                            intent.putExtra("hair", userProfileSummary[2]);
-                            intent.putExtra("shape", userProfileSummary[3]);
+                            intent.putExtra(StylesActivity.EXTRA_SKIN, userProfileSummary[0]);
+                            intent.putExtra(StylesActivity.EXTRA_EYE, userProfileSummary[1]);
+                            intent.putExtra(StylesActivity.EXTRA_HAIR, userProfileSummary[2]);
+                            intent.putExtra(StylesActivity.EXTRA_SHAPE, userProfileSummary[3]);
                             v.getContext().startActivity(intent);
 
                         }
@@ -188,7 +222,16 @@ public class FaceProfileActivity extends FragmentActivity
 
 
         @Override
-        protected void onProgressUpdate(Void... values) {}
+        protected void onProgressUpdate(Integer... values) {
+            LoaderFragment lf = new LoaderFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt("bundle_image", values[0]);
+            lf.setArguments(bundle);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.remove(fragmentManager.findFragmentByTag(LOADER_FRAG));
+            fragmentTransaction.add(android.R.id.content, lf, LOADER_FRAG);
+            fragmentTransaction.commit();
+        }
     }
 
     Byte[] toObjects(byte[] bytesPrim) {

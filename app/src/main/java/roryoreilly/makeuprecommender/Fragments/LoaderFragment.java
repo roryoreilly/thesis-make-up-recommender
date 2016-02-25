@@ -4,86 +4,67 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import roryoreilly.makeuprecommender.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link LoaderFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link LoaderFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class LoaderFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    public final String IMAGE_ID = "bundle_image";
     private OnFragmentInteractionListener mListener;
+    ImageView loaderImage;
+    private int curImage;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment LoaderFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static LoaderFragment newInstance(String param1, String param2) {
-        LoaderFragment fragment = new LoaderFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    Integer[] imageId = {
+            R.drawable.loading_1, R.drawable.loading_2, R.drawable.loading_3,
+            R.drawable.loading_4, R.drawable.loading_5, R.drawable.loading_6,
+            R.drawable.loading_7, R.drawable.loading_8, R.drawable.loading_9,
+            R.drawable.loading_10,R.drawable.loading_11,R.drawable.loading_12,
+            R.drawable.loading_13,R.drawable.loading_14,R.drawable.loading_15,
+            R.drawable.loading_16,R.drawable.loading_17,R.drawable.loading_18,
+            R.drawable.loading_19,R.drawable.loading_20,R.drawable.loading_21,
+            R.drawable.loading_22,R.drawable.loading_23,R.drawable.loading_24,
+            R.drawable.loading_25,R.drawable.loading_26,R.drawable.loading_27,
+            R.drawable.loading_28,R.drawable.loading_29,R.drawable.loading_30,
+            R.drawable.loading_31,R.drawable.loading_32,R.drawable.loading_33,
+            R.drawable.loading_34,R.drawable.loading_35,R.drawable.loading_36,
+            R.drawable.loading_37,R.drawable.loading_38};
 
     public LoaderFragment() {
-        // Required empty public constructor
+        curImage = 0;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        curImage = getArguments().getInt(IMAGE_ID);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_loader, container, false);
+        View view = inflater.inflate(R.layout.fragment_loader, container, false);
+        loaderImage = (ImageView) view.findViewById(R.id.loaderImage);
+        loaderImage.setImageResource(imageId[curImage]);
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    public void onUpdateNextImage(int i) {
+        loaderImage.setImageResource(imageId[curImage]);
+        curImage++;
+        if (curImage > 37) {
+            curImage = 0;
         }
-    }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+
     }
 
     @Override

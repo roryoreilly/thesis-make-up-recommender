@@ -16,7 +16,8 @@
     <string name="error_sth_went_wrong">Something went wrong. Please try again.</string>
     <string name="title_activity_face_profile">FaceProfileActivity</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_styles">Styles Activity</string>
+    <string name="title_activity_recommendations">RecommendationsActivity</string>
 </resources>
