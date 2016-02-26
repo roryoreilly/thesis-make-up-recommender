@@ -20,7 +20,7 @@ import weka.core.Instances;
 public class Model {
     public static final int EYE_FILE = R.raw.eye_colour;
     public static final int SHAPE_FILE = R.raw.face_shape;
-    public static final int HAIR_FILE = R.raw.eye_colour;
+    public static final int HAIR_FILE = R.raw.hair_colour;
 
     public Context context;
 

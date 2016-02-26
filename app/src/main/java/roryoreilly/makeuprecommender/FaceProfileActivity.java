@@ -10,7 +10,6 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +32,7 @@ import roryoreilly.makeuprecommender.Classifier.FaceDetect;
 import roryoreilly.makeuprecommender.Classifier.UserProfile;
 import roryoreilly.makeuprecommender.Fragments.LoaderFragment;
 import roryoreilly.makeuprecommender.View.ProfileListAdapter;
+import roryoreilly.makeuprecommender.utils.BitmapHelper;
 
 public class FaceProfileActivity extends Activity
         implements LoaderFragment.OnFragmentInteractionListener{
@@ -48,6 +48,7 @@ public class FaceProfileActivity extends Activity
 
     FragmentManager fragmentManager;
     UserProfile user;
+    boolean loaderInPlace;
 
     Integer[] imgid = {
             R.drawable.profile_skin,
@@ -63,14 +64,8 @@ public class FaceProfileActivity extends Activity
 
         // places the loading fragment over the screen while the data is collected
         fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        LoaderFragment loaderFragment = new LoaderFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt("bundle_image", 0);
-        loaderFragment.setArguments(bundle);
-        fragmentTransaction.add(android.R.id.content, loaderFragment, LOADER_FRAG);
-        fragmentTransaction.commit();
+        loaderInPlace = true;
 
 //        byte[] imgByte = getIntent().getExtras().getByteArray(EXTRA_IMAGE_BYTE);
 //        Bitmap img = BitmapHelper.byteArrayToBitmap(imgByte);
@@ -88,21 +83,113 @@ public class FaceProfileActivity extends Activity
         options.inJustDecodeBounds = false;
         Bitmap img = BitmapFactory.decodeFile(fileSrc, options);
 
-        new FaceClassify(this ,loaderFragment).execute(img);
+//        new Thread() {
+//            public void run() {
+//                int i =0;
+//                while(loaderInPlace) {
+//                    updateLoader(i);
+//                    i++;
+//                    if(i>37) i=0;
+//                    try {
+//                        Thread.sleep(100);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }.start();
+
+        FaceClassify face = new FaceClassify(this);
+
+        face.execute(img);
+
+        /****************
+                TESTING
+         ****************/
+        stylesButton.setOnClickListener(
+                new Button.OnClickListener() {
+                    public void onClick(View v) {
+                        Intent intent = new Intent(v.getContext(), StylesActivity.class);
+                        intent.putExtra(StylesActivity.EXTRA_SKIN, "Light skin undertone");
+                        intent.putExtra(StylesActivity.EXTRA_EYE, "Blue Eyes");
+                        intent.putExtra(StylesActivity.EXTRA_HAIR, "Brown Hair");
+                        intent.putExtra(StylesActivity.EXTRA_SHAPE, "Round Face Shape");
+                        v.getContext().startActivity(intent);
+
+                    }
+                }
+        );
+    }
+
+
+    private void updateLoader(int i) {
+        LoaderFragment lf = new LoaderFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("bundle_image", i);
+        lf.setArguments(bundle);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.remove(fragmentManager.findFragmentByTag(LOADER_FRAG));
+        fragmentTransaction.add(android.R.id.content, lf, LOADER_FRAG);
+        fragmentTransaction.commit();
     }
 
     public void onFragmentInteraction(Uri uri){
         //you can leave it empty
     }
 
+    private class LoaderAsync extends AsyncTask<Void, Integer, Boolean> {
+
+        @Override
+        protected void onPreExecute() {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            LoaderFragment loaderFragment = new LoaderFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt("bundle_image", 0);
+            loaderFragment.setArguments(bundle);
+            fragmentTransaction.add(android.R.id.content, loaderFragment, LOADER_FRAG);
+            fragmentTransaction.commit();
+        }
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            int i =0;
+            while(loaderInPlace) {
+                publishProgress(i);
+                i++;
+                if(i>37) i=0;
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return true;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+
+            LoaderFragment lf = new LoaderFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt("bundle_image", values[0]);
+            lf.setArguments(bundle);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.remove(fragmentManager.findFragmentByTag(LOADER_FRAG));
+            fragmentTransaction.add(android.R.id.content, lf, LOADER_FRAG);
+            fragmentTransaction.commit();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.remove(fragmentManager.findFragmentByTag(LOADER_FRAG));
+            fragmentTransaction.commit();
+        }
+    }
     private class FaceClassify extends AsyncTask<Bitmap, Integer, FaceDetect> {
         Activity activity;
-        LoaderFragment loaderFragment;
 
-
-        private FaceClassify (Activity activity, LoaderFragment loaderFragment) {
+        private FaceClassify (Activity activity) {
             this.activity = activity;
-            this.loaderFragment = loaderFragment;
         }
 
         // Places the loading screen over the activity
@@ -113,21 +200,7 @@ public class FaceProfileActivity extends Activity
         // classifies the face
         @Override
         protected FaceDetect doInBackground(Bitmap... data) {
-            new Thread() {
-                public void run() {
-                    int i =0;
-                    while(true) {
-                        publishProgress(i);
-                        i++;
-                        if(i>37) i=0;
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }.start();
+
 
 
 //            new Runnable() {
@@ -147,17 +220,7 @@ public class FaceProfileActivity extends Activity
 //            }.run();
 
 
-            Bitmap img = data[0];
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            float scale = Math.min(1, Math.min(600f / img.getWidth(), 600f / img.getHeight()));
-            Matrix matrix = new Matrix();
-            matrix.postScale(scale, scale);
-            Bitmap imgSmall = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, false);
-            imgSmall.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            byte[] imgStream = stream.toByteArray();
-
-//            byte[] img = toPrimitive(data);
-
+            byte[] imgStream = BitmapHelper.bitmapToByteArray(data[0]);
             HttpRequests httpRequests = new HttpRequests(
 //                    "ac5ac2ee68aa82214738f2de7935c376",     // America server
 //                    "ECiD5AGI5077NKXwJjXqOmB1Xa94eNFn");
@@ -192,7 +255,7 @@ public class FaceProfileActivity extends Activity
             // creates the user profile and classify their skin tone, hair colour, eye colour and face shape
             user = new UserProfile(activity);
             user.classify(face);
-            profileImage.setImageURI(Uri.parse(getIntent().getExtras().getString(EXTRA_IMAGE_URI)));
+            profileImage.setImageBitmap(face.getImg());
 
             // adds the data from the user profile to the list view
             final String[] userProfileSummary = user.summary();
@@ -200,9 +263,7 @@ public class FaceProfileActivity extends Activity
             ProfileListAdapter adapter = new ProfileListAdapter(activity, userProfileSummary, imgid);
             list.setAdapter(adapter);
 
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.remove(fragmentManager.findFragmentByTag(LOADER_FRAG));
-            fragmentTransaction.commit();
+            loaderInPlace = false;
 
             stylesButton.setOnClickListener(
                     new Button.OnClickListener() {
@@ -217,20 +278,6 @@ public class FaceProfileActivity extends Activity
                         }
                     }
             );
-        }
-
-
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            LoaderFragment lf = new LoaderFragment();
-            Bundle bundle = new Bundle();
-            bundle.putInt("bundle_image", values[0]);
-            lf.setArguments(bundle);
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.remove(fragmentManager.findFragmentByTag(LOADER_FRAG));
-            fragmentTransaction.add(android.R.id.content, lf, LOADER_FRAG);
-            fragmentTransaction.commit();
         }
     }
 

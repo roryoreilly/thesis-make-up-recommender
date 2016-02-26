@@ -15,7 +15,7 @@ public class Product {
     }
 
     public String getType() {
-        return mName;
+        return mType;
     }
 
     public String getName() {

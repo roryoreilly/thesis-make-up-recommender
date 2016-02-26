@@ -1,4 +1,4 @@
-@relation face_shape
+@relation face-shape
 
 @attribute width_over_height REAL
 @attribute points_error_fourOverTwo REAL

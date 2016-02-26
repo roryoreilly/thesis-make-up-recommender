@@ -21,7 +21,7 @@ public class StylesActivity extends AppCompatActivity {
     public static final String EXTRA_SHAPE = "stylesctivity.extra.shape";
     public static final String EXTRA_OCCASION = "stylesctivity.extra.occasion";
 
-    @Bind(R.id.style_list) ListView listView;
+    @Bind(R.id.style_button_list) ListView listView;
 
     Integer[] imgid = {
             R.drawable.essentials_look_blur,
@@ -39,13 +39,14 @@ public class StylesActivity extends AppCompatActivity {
         final String eye = getIntent().getExtras().getString(EXTRA_EYE);
         final String shape = getIntent().getExtras().getString(EXTRA_SHAPE);
 
-        StylesListAdapter adapter = new StylesListAdapter(this, imgid);
+        final String[] occasionName = new String[]{"Essentials", "Going Out", "Natural"};
+        StylesListAdapter adapter = new StylesListAdapter(this, occasionName, imgid);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                String occasion = listView.getSelectedItem().toString();
+                String occasion = (String) v.getTag();
                 Intent intent = new Intent(v.getContext(), RecommendationsActivity.class);
                 intent.putExtra(EXTRA_SKIN, skin);
                 intent.putExtra(EXTRA_HAIR, hair);
@@ -56,6 +57,7 @@ public class StylesActivity extends AppCompatActivity {
             }
         });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -83,8 +83,8 @@ public class UserProfile {
     public String[] summary() {
         return new String[]{skin.getClassName() + " skin tones",
                 eye.getClassName() + " eyes",
-                eye.getClassName() + " hair",
-                eye.getClassName() + " face shape"};
+                hair.getClassName() + " hair",
+                shape.getClassName() + " face shape"};
     }
 
 
