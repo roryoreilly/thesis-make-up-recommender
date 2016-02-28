@@ -230,6 +230,7 @@ public class FaceProfileActivity extends Activity
                     "VTWSmVtpxML4P9gLl60et7W0TZ2bZXrw");
             httpRequests.setHttpTimeOut(TIMEOUT);
             FaceDetect face = new FaceDetect();
+            face.setImgFromByteArray(imgStream);
 
             try {
                 FaceppResult result = httpRequests.detectionDetect(
@@ -241,17 +242,21 @@ public class FaceProfileActivity extends Activity
                 face.setLandmark(httpRequests.detectionLandmark(
                         new PostParameters().setFaceId(id)));
                 face.setWidthHeight();
-                face.setImgFromByteArray(imgStream);
                 return face;
             } catch (Exception e) {
                 Log.d("FaceProfile", "failed to get face detect");
                 e.printStackTrace();
-                return null;
+                return face;
             }
         }
 
         @Override
         protected void onPostExecute(FaceDetect face) {
+            if (!face.isSet()) {
+//                Bitmap img = face.getImg();
+//                new FaceClassify(activity).execute(img);
+                return;
+            }
             // creates the user profile and classify their skin tone, hair colour, eye colour and face shape
             user = new UserProfile(activity);
             user.classify(face);

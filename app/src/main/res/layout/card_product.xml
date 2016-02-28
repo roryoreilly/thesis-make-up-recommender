@@ -9,6 +9,12 @@
         android:id="@+id/cardImage"
         android:layout_gravity="center_horizontal" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/textView" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/productItem"
         android:layout_width="match_parent"

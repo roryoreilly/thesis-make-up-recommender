@@ -8,12 +8,14 @@ import android.support.v7.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import roryoreilly.makeuprecommender.Recommender.Product;
+import roryoreilly.makeuprecommender.Recommender.ProductCard;
+import roryoreilly.makeuprecommender.Recommender.ProductItem;
+import roryoreilly.makeuprecommender.View.ProductCardAdapter;
 import roryoreilly.makeuprecommender.View.ProductItemAdapter;
 
 public class RecommendationsActivity extends Activity {
 
-    List<Product> products;
+    List<ProductCard> pCards;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,17 +30,26 @@ public class RecommendationsActivity extends Activity {
 
         RecyclerView rvContacts = (RecyclerView) findViewById(R.id.productCard);
 
-        // Initialize products
-        products = new ArrayList<Product>();
-        products.add(new Product("Foundation", "Boo", true));
-        products.add(new Product("Concealer", "Foo", true));
-        products.add(new Product("Highlighter", "Bar", true));
+        // Initialize productItems
+        List<ProductItem> pItems = new ArrayList<ProductItem>();
+        pItems.add(new ProductItem("Foundation", "Boo", true));
+        pItems.add(new ProductItem("Concealer", "Foo", true));
+        pItems.add(new ProductItem("Highlighter", "Bar", true));
+        Integer imgid = R.drawable.essentials_look_blur;
+
+        pCards = new ArrayList<>();
+        pCards.add(new ProductCard(pItems, "Face", imgid, true));
+        pCards.add(new ProductCard(pItems, "Face", imgid, true));
+        pCards.add(new ProductCard(pItems, "Face", imgid, true));
+        pCards.add(new ProductCard(pItems, "Face", imgid, true));
         // Create adapter passing in the sample user data
-        ProductItemAdapter adapter = new ProductItemAdapter(products);
+        ProductCardAdapter adapter = new ProductCardAdapter(pCards, this);
         // Attach the adapter to the recyclerview to populate items
         rvContacts.setAdapter(adapter);
         // Set layout manager to position the items
-        rvContacts.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager llm =
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        rvContacts.setLayoutManager(llm);
     }
 
 }

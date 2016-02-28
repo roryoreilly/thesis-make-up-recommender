@@ -110,4 +110,8 @@ public class FaceDetect {
 
         return s;
     }
+
+    public boolean isSet() {
+        return (result==null) ? false : true;
+    }
 }

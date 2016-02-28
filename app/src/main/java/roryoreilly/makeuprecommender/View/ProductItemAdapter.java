@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import roryoreilly.makeuprecommender.R;
-import roryoreilly.makeuprecommender.Recommender.Product;
+import roryoreilly.makeuprecommender.Recommender.ProductItem;
 
 /**
  * Created by roryoreilly on 25/02/16.
@@ -18,11 +18,11 @@ import roryoreilly.makeuprecommender.Recommender.Product;
 public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.ViewHolder> {
 
     // Store a member variable for the contacts
-    private List<Product> mProducts;
+    private List<ProductItem> mProductItems;
 
     // Pass in the contact array into the constructor
-    public ProductItemAdapter(List<Product> products) {
-        mProducts = products;
+    public ProductItemAdapter(List<ProductItem> productItems) {
+        mProductItems = productItems;
     }
 
     // Provide a direct reference to each of the views within a data item
@@ -65,19 +65,19 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
     @Override
     public void onBindViewHolder(ProductItemAdapter.ViewHolder viewHolder, int position) {
         // Get the data model based on position
-        Product product = mProducts.get(position);
+        ProductItem productItem = mProductItems.get(position);
 
         // Set item views based on the data model
         TextView typeTextView = viewHolder.typeTextView;
-        typeTextView.setText(product.getType());
+        typeTextView.setText(productItem.getType());
 
         // Set item views based on the data model
         TextView nameTextView = viewHolder.nameTextView;
-        nameTextView.setText(product.getName());
+        nameTextView.setText(productItem.getName());
 
 //        Button button = viewHolder.messageButton;
 //
-//        if (product.isOnline()) {
+//        if (productItem.isOnline()) {
 //            button.setText("Message");
 //            button.setEnabled(true);
 //        }
@@ -91,6 +91,6 @@ public class ProductItemAdapter extends RecyclerView.Adapter<ProductItemAdapter.
     // Return the total count of items
     @Override
     public int getItemCount() {
-        return mProducts.size();
+        return mProductItems.size();
     }
 }
