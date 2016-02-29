@@ -17,7 +17,6 @@ public class ProductCard {
         mType = type;
         mMainImage = image;
         mOnline = online;
-        mProductItems = new ArrayList<ProductItem>();
     }
 
     public String getType() {

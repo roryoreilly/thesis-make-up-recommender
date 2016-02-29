@@ -1,93 +1,76 @@
 package roryoreilly.makeuprecommender.View;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-
-import java.util.List;
+import android.widget.TextView;
 
 import roryoreilly.makeuprecommender.R;
 import roryoreilly.makeuprecommender.Recommender.ProductCard;
+import roryoreilly.makeuprecommender.Recommender.ProductItem;
 
-/**
- * Created by roryoreilly on 26/02/16.
- */
-public class ProductCardAdapter extends RecyclerView.Adapter<ProductCardAdapter.ViewHolder>{
-    // Store a member variable for the contacts
-    private List<ProductCard> mProductCards;
-    private Activity activity;
 
-    // Pass in the contact array into the constructor
-    public ProductCardAdapter(List<ProductCard> productCards, Activity activity) {
-        mProductCards = productCards;
-        this.activity = activity;
-    }
+public class ProductCardAdapter extends RecyclerView.Adapter<ProductCardAdapter.CardViewHolder> {
+    private final Context mContext;
+    private final List<ProductCard> mItems;
 
-    // Provide a direct reference to each of the views within a data item
-    // Used to cache the views within the item layout for fast access
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        // Your holder should contain a member variable
-        // for any view that will be set as you render a row
-        public RecyclerView childRecyclerView;
+    public static class CardViewHolder extends RecyclerView.ViewHolder {
+        public final TextView title;
         public ImageView mainImageView;
+        public RecyclerView childRecyclerView;
+        public FrameLayout titleFrame;
 
-        // We also create a constructor that accepts the entire item row
-        // and does the view lookups to find each subview
-        public ViewHolder(View itemView) {
-            // Stores the itemView in a public final member variable that can be used
-            // to access the context from any ViewHolder instance.
-            super(itemView);
-
-            childRecyclerView = (RecyclerView) itemView.findViewById(R.id.productItem);
-            mainImageView = (ImageView) itemView.findViewById(R.id.cardImage);
-
-
+        public CardViewHolder(View view) {
+            super(view);
+            title = (TextView) view.findViewById(R.id.product_card_title);
+            mainImageView = (ImageView) view.findViewById(R.id.cardImage);
+            childRecyclerView = (RecyclerView) view.findViewById(R.id.productItem);
+            titleFrame = (FrameLayout) view.findViewById(R.id.product_card_frame);
         }
     }
 
-    // Usually involves inflating a layout from XML and returning the holder
-    @Override
-    public ProductCardAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-
-        // Inflate the custom layout
-        View productView = inflater.inflate(R.layout.card_product, parent, false);
-
-        // Return a new holder instance
-        ViewHolder viewHolder = new ViewHolder(productView);
-        return viewHolder;
+    public ProductCardAdapter(Activity context, RecyclerView recyclerView, List<ProductCard> items) {
+        mContext = context;
+        mItems = items;
     }
 
-    // Involves populating data into the item through holder
     @Override
-    public void onBindViewHolder(ProductCardAdapter.ViewHolder viewHolder, int position) {
-        // Get the data model based on position
-        ProductCard productCard = mProductCards.get(position);
+    public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.card_product, parent, false);
 
-        // Set item views based on the data model
-        ImageView mainImageView = viewHolder.mainImageView;
-        mainImageView.setImageResource(productCard.getImage());
+        return new CardViewHolder(view);
+    }
 
-        // Set item views based on the data model
-        RecyclerView childRecyclerView = viewHolder.childRecyclerView;
+    @Override
+    public void onBindViewHolder(CardViewHolder holder, int position) {
+        holder.title.setText(mItems.get(position).getType());
+        holder.mainImageView.setImageResource(mItems.get(position).getImage());
+        holder.title.setText(mItems.get(position).getType());
+        holder.titleFrame.setClipToOutline(true);
 
-        ProductItemAdapter adapter = new ProductItemAdapter(productCard.getProductItems());
-        // Attach the adapter to the recyclerview to populate items
+        // set product list with the child recycler view
+        List<ProductItem> products = mItems.get(position).getProductItems();
+        RecyclerView childRecyclerView = holder.childRecyclerView;
+        childRecyclerView.setLayoutManager(
+                new LinearLayoutManager(
+                        mContext, LinearLayoutManager.VERTICAL, false));
+
+        ProductItemAdapter adapter = new ProductItemAdapter(products);
         childRecyclerView.setAdapter(adapter);
-        // Set layout manager to position the items
-        RecyclerView.LayoutManager layoutManager = new CustomLinearLayoutManager(activity);
-        childRecyclerView.setLayoutManager(layoutManager);
+        childRecyclerView.setVisibility(View.VISIBLE);
 
     }
 
-    // Return the total count of items
     @Override
     public int getItemCount() {
-        return mProductCards.size();
+        return mItems.size();
     }
 }

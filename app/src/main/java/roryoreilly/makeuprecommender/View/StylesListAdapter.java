@@ -18,7 +18,7 @@ public class StylesListAdapter extends ArrayAdapter<String> {
     private final String[] itemname;
 
     public StylesListAdapter(Activity context, String[] itemname, Integer[] imgid) {
-        super(context, R.layout.item_profile, itemname);
+        super(context, R.layout.item_style, itemname);
 
         this.context = context;
         this.imgid = imgid;
