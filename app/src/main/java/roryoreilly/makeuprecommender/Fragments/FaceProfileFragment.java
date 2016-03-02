@@ -112,7 +112,7 @@ public class FaceProfileFragment extends Fragment {
                 face.setLandmark(httpRequests.detectionLandmark(
                         new PostParameters().setFaceId(id)));
                 face.setWidthHeight();
-                face.setImgFromByteArray(imgStream);
+                face.setImgFromByteArray(null);
                 return face;
             } catch (Exception e) {
                 Log.d("FaceProfile", "failed to get face detect");

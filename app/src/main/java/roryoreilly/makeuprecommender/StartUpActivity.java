@@ -9,18 +9,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import roryoreilly.makeuprecommender.Database.FillDatabase;
+import roryoreilly.makeuprecommender.Database.MySql;
 import roryoreilly.makeuprecommender.utils.BitmapHelper;
 import roryoreilly.makeuprecommender.utils.CameraIntentHelper;
 import roryoreilly.makeuprecommender.utils.CameraIntentHelperCallback;
@@ -30,6 +30,7 @@ public class StartUpActivity extends Activity {
     @Bind(R.id.choosephoto_button) Button choosePhotoButton;
     private final int REQUEST_GET_PHOTO = 1;
     CameraIntentHelper mCameraIntentHelper;
+    MySql db = new MySql(this);
 
 
     @Override
@@ -37,6 +38,9 @@ public class StartUpActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_up);
         ButterKnife.bind(this);
+
+        db.onUpgrade(db.getWritableDatabase(), 1, 2);
+        FillDatabase.addProducts(db, this);
 
         takePhotoButton.setOnClickListener(
             new Button.OnClickListener() {
@@ -54,24 +58,21 @@ public class StartUpActivity extends Activity {
         choosePhotoButton.setOnClickListener(
             new Button.OnClickListener() {
                 public void onClick(View v) {
-//                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-//                    photoPickerIntent.setType("image/*");
-//                    startActivityForResult(photoPickerIntent, REQUEST_GET_PHOTO);
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("image/*");
+                    startActivityForResult(photoPickerIntent, REQUEST_GET_PHOTO);
 
 
                     /***** TESTING ****/
-                    String fileSrc = "/storage/emulated/0/Pictures/1408174972189.jpg";
-                    Uri photoUri = Uri.fromFile(new File(fileSrc));
-
-                    Bitmap photo = BitmapHelper.readBitmap(StartUpActivity.this, photoUri);
-                    byte[] imgByte = BitmapHelper.bitmapToByteArray(photo);
+//                    String fileSrc = "/storage/emulated/0/Pictures/p4finalblog-13.jpg";
+//                    String fileSrc = "/storage/emulated/0/Pictures/1408174972189.jpg";
+//                    Uri photoUri = Uri.fromFile(new File(fileSrc));
 
 
 
-                    Intent intent = new Intent(v.getContext(), FaceProfileActivity.class);
-                    intent.putExtra(FaceProfileActivity.EXTRA_IMAGE_BYTE, imgByte);
-                    intent.putExtra(FaceProfileActivity.EXTRA_IMAGE_URI, photoUri.getPath());
-                    startActivity(intent);
+//                    Intent intent = new Intent(v.getContext(), FaceProfileActivity.class);
+//                    intent.putExtra(FaceProfileActivity.EXTRA_IMAGE_URI, photoUri.getPath());
+//                    startActivity(intent);
 
                 }
             }
@@ -82,14 +83,10 @@ public class StartUpActivity extends Activity {
         mCameraIntentHelper = new CameraIntentHelper(this, new CameraIntentHelperCallback() {
             @Override
             public void onPhotoUriFound(Date dateCameraIntentStarted, Uri photoUri, int rotateXDegrees, View view) {
-//                messageView.setText(getString(R.string.activity_camera_intent_photo_uri_found) + photoUri.toString());
 
-                Bitmap photo = BitmapHelper.readBitmap(StartUpActivity.this, photoUri);
-                byte[] imgByte = BitmapHelper.bitmapToByteArray(photo);
-                if (photo != null) {
+                if (photoUri != null) {
                     Intent intent = new Intent(view.getContext(), FaceProfileActivity.class);
-                    intent.putExtra(FaceProfileActivity.EXTRA_IMAGE_BYTE, imgByte);
-                    intent.putExtra(FaceProfileActivity.EXTRA_IMAGE_URI, photoUri.toString());
+                    intent.putExtra(FaceProfileActivity.EXTRA_IMAGE_URI, photoUri.getPath());
                     view.getContext().startActivity(intent);
 
                 }
@@ -151,13 +148,10 @@ public class StartUpActivity extends Activity {
             String fileSrc = cursor.getString(idx);
             Uri photoUri = Uri.fromFile(new File(fileSrc));
 
-            Bitmap photo = BitmapHelper.readBitmap(StartUpActivity.this, photoUri);
-            byte[] imgByte = BitmapHelper.bitmapToByteArray(photo);
 
 
-
+            Log.d("Choose Photo", fileSrc);
             Intent intent = new Intent(this, FaceProfileActivity.class);
-            intent.putExtra(FaceProfileActivity.EXTRA_IMAGE_BYTE, imgByte);
             intent.putExtra(FaceProfileActivity.EXTRA_IMAGE_URI, photoUri.getPath());
             this.startActivity(intent);
         } else if (requestCode == CameraIntentHelper.CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {

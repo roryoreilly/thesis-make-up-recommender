@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import roryoreilly.makeuprecommender.R;
+import roryoreilly.makeuprecommender.Recommender.SkinTone;
 
 public class ProfileListAdapter extends ArrayAdapter<String> {
 
@@ -24,15 +25,21 @@ public class ProfileListAdapter extends ArrayAdapter<String> {
         this.imgid=imgid;
     }
 
-    public View getView(int position,View view,ViewGroup parent) {
+    public View getView(int position, View view, ViewGroup parent) {
         LayoutInflater inflater=context.getLayoutInflater();
-        View rowView=inflater.inflate(R.layout.item_profile, null,true);
+        View rowView = inflater.inflate(R.layout.item_profile, null,true);
 
         TextView txtTitle = (TextView) rowView.findViewById(R.id.classifier_name);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.classifier_icon);
-
-        txtTitle.setText(itemname[position]);
         imageView.setImageResource(imgid[position]);
+
+
+        if (position == 0) {
+            txtTitle.setText(SkinTone.nameFromCode(itemname[0]) + " Skin Tone");
+        } else {
+            txtTitle.setText(itemname[position]);
+        }
+
         return rowView;
 
     };

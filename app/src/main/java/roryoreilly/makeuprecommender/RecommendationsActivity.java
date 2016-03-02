@@ -13,23 +13,31 @@ import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 import java.util.ArrayList;
 import java.util.List;
 
+import roryoreilly.makeuprecommender.Database.MySql;
+import roryoreilly.makeuprecommender.Database.Product;
+import roryoreilly.makeuprecommender.Recommender.FaceProductCard;
 import roryoreilly.makeuprecommender.Recommender.ProductCard;
-import roryoreilly.makeuprecommender.Recommender.ProductItem;
 import roryoreilly.makeuprecommender.View.ProductCardAdapter;
 
 public class RecommendationsActivity extends Activity {
     protected RecyclerViewPager mRecyclerView;
+    MySql db;
+
+    String skin;
+    String eye;
+    String occasion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recommendations);
+        db = new MySql(this);
 
-        String skin = getIntent().getExtras().getString(StylesActivity.EXTRA_SKIN);
+        skin = getIntent().getExtras().getString(StylesActivity.EXTRA_SKIN);
         String hair = getIntent().getExtras().getString(StylesActivity.EXTRA_HAIR);
-        String eye = getIntent().getExtras().getString(StylesActivity.EXTRA_EYE);
+        eye = getIntent().getExtras().getString(StylesActivity.EXTRA_EYE);
         String shape = getIntent().getExtras().getString(StylesActivity.EXTRA_SHAPE);
-        String occasion = getIntent().getExtras().getString(StylesActivity.EXTRA_OCCASION);
+        occasion = getIntent().getExtras().getString(StylesActivity.EXTRA_OCCASION);
 
         initViewPager();
     }
@@ -41,23 +49,13 @@ public class RecommendationsActivity extends Activity {
         mRecyclerView.setLayoutManager(layout);
 
 
-        List<ProductItem> items = new ArrayList<>();
-        items.add(new ProductItem("Foundation",
-                "Studio Fix Fluid SPF 15",
-                "An oil-controlling formula that offers a natural matte finish with medium to full coverage.",
-                R.drawable.foundation));
-        items.add(new ProductItem("Foundation",
-                "Studio Fix Fluid SPF 15",
-                "An oil-controlling formula that offers a natural matte finish with medium to full coverage.",
-                R.drawable.foundation));
-        items.add(new ProductItem("Foundation",
-                "Studio Fix Fluid SPF 15",
-                "An oil-controlling formula that offers a natural matte finish with medium to full coverage.",
-                R.drawable.foundation));
-        items.add(new ProductItem("Foundation",
-                "Studio Fix Fluid SPF 15",
-                "An oil-controlling formula that offers a natural matte finish with medium to full coverage.",
-                R.drawable.foundation));
+        List<Product> items = new ArrayList<>();
+
+        FaceProductCard fpc = new FaceProductCard(db);
+        items.add(fpc.getFoundation(skin));
+        items.add(fpc.getConcealer(skin));
+        items.add(fpc.getBronzer());
+        items.add(fpc.getBlush("Fair", "Warm", "Blue", "Day"));
 
         List<ProductCard> cards = new ArrayList<>();
         cards.add(new ProductCard(items, "Face", R.drawable.boldlips_look, true));

@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="roryoreilly.makeuprecommender.RecommendationsActivity">
+    tools:context="roryoreilly.makeuprecommender.RecommendationsActivity"
+    android:background="@color/background_color">
 
     <com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager
         android:layout_marginTop="20dp"

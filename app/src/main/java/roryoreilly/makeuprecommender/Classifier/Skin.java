@@ -1,21 +1,28 @@
 package roryoreilly.makeuprecommender.Classifier;
 
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.provider.MediaStore;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import roryoreilly.makeuprecommender.Recommender.SkinTone;
 import roryoreilly.makeuprecommender.utils.WeiszfeldAlgorithm;
 
 /**
  * Created by roryorilly on 11/02/16.
  */
 public class Skin extends Classifier{
+    private SkinTone tone;
 
-    public Skin(FaceDetect face) {
-        super(face);
+    public Skin(FaceDetect face, Context context) {
+        super(face, context);
         this.values = new float[3];
     }
 
@@ -50,6 +57,14 @@ public class Skin extends Classifier{
     }
 
     private List<float[]> getPixels(Point v1, Point v2, Point v3) {
+        Bitmap bmp = null;
+        try {
+            bmp = MediaStore.Images.Media.getBitmap(
+                    context.getContentResolver(), face.getImg());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         List<float[]> pixels = new ArrayList<>();
         int maxX = Math.max(v1.x, Math.max(v2.x, v3.x));
         int minX = Math.min(v1.x, Math.min(v2.x, v3.x));
@@ -68,7 +83,7 @@ public class Skin extends Classifier{
                 float t = crossProduct(vs1, q) / crossProduct(vs1, vs2);
 
                 if ((s >= 0) && (t >= 0) && (s + t <= 1)) {
-                    int rgb = face.getImg().getPixel(x, y);
+                    int rgb = bmp.getPixel(x, y);
                     float[] hsv = new float[3];
                     Color.colorToHSV(rgb, hsv);
                     pixels.add(hsv);
@@ -83,4 +98,11 @@ public class Skin extends Classifier{
         return p1.x * p2.y - p1.y * p2.x;
     }
 
+    public SkinTone getTone() {
+        return tone;
+    }
+
+    public void setTone(SkinTone tone) {
+        this.tone = tone;
+    }
 }

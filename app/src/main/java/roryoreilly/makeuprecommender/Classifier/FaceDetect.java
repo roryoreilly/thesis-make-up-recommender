@@ -1,7 +1,9 @@
 package roryoreilly.makeuprecommender.Classifier;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.net.Uri;
 import android.util.Log;
 
 //import com.facepp.error.FaceppParseException;
@@ -21,7 +23,7 @@ public class FaceDetect {
     private FaceppResult result, landmark;
     private double faceWidth, faceHeight;
     private int imgWidth, imgHeight;
-    private Bitmap img;
+    private Uri img;
 
     public FaceDetect() {
     }
@@ -95,11 +97,11 @@ public class FaceDetect {
         return center;
     }
 
-    public void setImgFromByteArray(byte[] imgStream) {
-        img = BitmapHelper.byteArrayToBitmap(imgStream);
+    public void setImgFromByteArray(Uri img) {
+        this.img = img;
     }
 
-    public Bitmap getImg() {
+    public Uri getImg() {
         return img;
     }
 

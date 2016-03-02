@@ -25,6 +25,9 @@ import roryoreilly.makeuprecommender.Facepp.Result.FaceppResult;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -73,15 +76,8 @@ public class FaceProfileActivity extends Activity
 
         String fileSrc = getIntent().getExtras().getString(EXTRA_IMAGE_URI);
         System.out.println(fileSrc);
-        profileImage.setImageURI(Uri.fromFile(new File(fileSrc)));
-
-        //just read size
-        BitmapFactory.Options options = new BitmapFactory.Options();
-
-        //scale size to read
-        options.inSampleSize = Math.max(1, (int) Math.ceil(Math.max((double) options.outWidth / 1024f, (double) options.outHeight / 1024f)));
-        options.inJustDecodeBounds = false;
-        Bitmap img = BitmapFactory.decodeFile(fileSrc, options);
+        Uri uri = Uri.fromFile(new File(fileSrc));
+        profileImage.setImageURI(uri);
 
 //        new Thread() {
 //            public void run() {
@@ -101,7 +97,7 @@ public class FaceProfileActivity extends Activity
 
         FaceClassify face = new FaceClassify(this);
 
-        face.execute(img);
+        face.execute(uri);
 
         /****************
                 TESTING
@@ -110,7 +106,7 @@ public class FaceProfileActivity extends Activity
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         Intent intent = new Intent(v.getContext(), StylesActivity.class);
-                        intent.putExtra(StylesActivity.EXTRA_SKIN, "Light skin undertone");
+                        intent.putExtra(StylesActivity.EXTRA_SKIN, "NC 25");
                         intent.putExtra(StylesActivity.EXTRA_EYE, "Blue Eyes");
                         intent.putExtra(StylesActivity.EXTRA_HAIR, "Brown Hair");
                         intent.putExtra(StylesActivity.EXTRA_SHAPE, "Round Face Shape");
@@ -185,7 +181,7 @@ public class FaceProfileActivity extends Activity
             fragmentTransaction.commit();
         }
     }
-    private class FaceClassify extends AsyncTask<Bitmap, Integer, FaceDetect> {
+    private class FaceClassify extends AsyncTask<Uri, Integer, FaceDetect> {
         Activity activity;
 
         private FaceClassify (Activity activity) {
@@ -195,44 +191,35 @@ public class FaceProfileActivity extends Activity
         // Places the loading screen over the activity
         @Override
         protected void onPreExecute() {
+            LoaderFragment lf = new LoaderFragment();
+            Bundle bundle = new Bundle();
+            lf.setArguments(bundle);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(android.R.id.content, lf, LOADER_FRAG);
+            fragmentTransaction.commit();
         }
 
         // classifies the face
         @Override
-        protected FaceDetect doInBackground(Bitmap... data) {
-
-
-
-//            new Runnable() {
-//                public void run() {
-//                    int i =0;
-//                    while(true) {
-//                        publishProgress(i);
-//                        i++;
-//                        if(i>37) i=0;
-//                        try {
-//                            Thread.sleep(100);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }.run();
-
-
-            byte[] imgStream = BitmapHelper.bitmapToByteArray(data[0]);
-            HttpRequests httpRequests = new HttpRequests(
-//                    "ac5ac2ee68aa82214738f2de7935c376",     // America server
-//                    "ECiD5AGI5077NKXwJjXqOmB1Xa94eNFn");
-//                    "8804929f191f061f387bcc8a19a7dc0e",   // China server
-//                    "jFOQ0iRKTmvlId_8cAK2vej-eJRfwXeY");
-                    "d8f245446c63d3bc8a62a23123488a3f",     // China server
-                    "VTWSmVtpxML4P9gLl60et7W0TZ2bZXrw");
-            httpRequests.setHttpTimeOut(TIMEOUT);
+        protected FaceDetect doInBackground(Uri... data) {
+            Uri uri = data[0];
             FaceDetect face = new FaceDetect();
-            face.setImgFromByteArray(imgStream);
+            Log.d("FaceDetect", "Attempting to find the face landmarks");
 
             try {
+                InputStream iStream = getContentResolver().openInputStream(uri);
+                byte[] imgStream = BitmapHelper.getBytes(iStream);
+
+                HttpRequests httpRequests = new HttpRequests(
+    //                    "ac5ac2ee68aa82214738f2de7935c376",     // America server
+    //                    "ECiD5AGI5077NKXwJjXqOmB1Xa94eNFn");
+    //                    "8804929f191f061f387bcc8a19a7dc0e",   // China server
+    //                    "jFOQ0iRKTmvlId_8cAK2vej-eJRfwXeY");
+                        "d8f245446c63d3bc8a62a23123488a3f",     // China server
+                        "VTWSmVtpxML4P9gLl60et7W0TZ2bZXrw");
+                httpRequests.setHttpTimeOut(TIMEOUT);
+                face.setImgFromByteArray(uri);
+
                 FaceppResult result = httpRequests.detectionDetect(
                         new PostParameters().setImg(imgStream));
                 face.setResult(result);
@@ -253,14 +240,15 @@ public class FaceProfileActivity extends Activity
         @Override
         protected void onPostExecute(FaceDetect face) {
             if (!face.isSet()) {
-//                Bitmap img = face.getImg();
-//                new FaceClassify(activity).execute(img);
+                Log.d("FaceDetect", "failed to detect face");
                 return;
             }
             // creates the user profile and classify their skin tone, hair colour, eye colour and face shape
             user = new UserProfile(activity);
             user.classify(face);
-            profileImage.setImageBitmap(face.getImg());
+
+            Uri uri = face.getImg();
+            profileImage.setImageURI(uri);
 
             // adds the data from the user profile to the list view
             final String[] userProfileSummary = user.summary();
@@ -268,6 +256,10 @@ public class FaceProfileActivity extends Activity
             ProfileListAdapter adapter = new ProfileListAdapter(activity, userProfileSummary, imgid);
             list.setAdapter(adapter);
 
+
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.remove(fragmentManager.findFragmentByTag(LOADER_FRAG));
+            fragmentTransaction.commit();
             loaderInPlace = false;
 
             stylesButton.setOnClickListener(
@@ -285,22 +277,4 @@ public class FaceProfileActivity extends Activity
             );
         }
     }
-
-    Byte[] toObjects(byte[] bytesPrim) {
-        Byte[] bytes = new Byte[bytesPrim.length];
-        int i = 0;
-        for (byte b : bytesPrim) bytes[i++] = b;
-        return bytes;
-
-    }
-
-    byte[] toPrimitive(Byte[] oBytes) {
-        byte[] bytes = new byte[oBytes.length];
-        for(int i = 0; i < oBytes.length; i++){
-            bytes[i] = oBytes[i];
-        }
-        return bytes;
-
-    }
-
 }

@@ -13,9 +13,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import roryoreilly.makeuprecommender.Database.Product;
 import roryoreilly.makeuprecommender.R;
 import roryoreilly.makeuprecommender.Recommender.ProductCard;
-import roryoreilly.makeuprecommender.Recommender.ProductItem;
 
 
 public class ProductCardAdapter extends RecyclerView.Adapter<ProductCardAdapter.CardViewHolder> {
@@ -57,7 +57,7 @@ public class ProductCardAdapter extends RecyclerView.Adapter<ProductCardAdapter.
         holder.titleFrame.setClipToOutline(true);
 
         // set product list with the child recycler view
-        List<ProductItem> products = mItems.get(position).getProductItems();
+        List<Product> products = mItems.get(position).getProductItems();
         RecyclerView childRecyclerView = holder.childRecyclerView;
         childRecyclerView.setLayoutManager(
                 new LinearLayoutManager(

@@ -15,9 +15,9 @@ import java.util.concurrent.TimeoutException;
 import roryoreilly.makeuprecommender.Model.Model;
 import roryoreilly.makeuprecommender.Model.SkinModel;
 import roryoreilly.makeuprecommender.R;
+import roryoreilly.makeuprecommender.Recommender.SkinTone;
 
 public class UserProfile {
-//    private FaceDetect face;
     private Eye eye;
     private Hair hair;
     private Shape shape;
@@ -29,38 +29,28 @@ public class UserProfile {
         this.context = context;
     }
 
-//    public void detectAndClassify(byte[] img) {
-//        AsyncTask asyncDetect = new Detect().execute(toObjects(img));
-//        try {
-//            asyncDetect.get(TIMEOUT, TimeUnit.MILLISECONDS);
-//        } catch (InterruptedException e) {
-//            Log.d("Face Detection", "Interruptied Exception");
-//            e.printStackTrace();
-//        } catch (ExecutionException e) {
-//            Log.d("Face Detection", "Execution Exception");
-//            e.printStackTrace();
-//        } catch (TimeoutException e) {
-//            Log.d("Face Detection", "Timeout Exception");
-//            e.printStackTrace();
-//        }
-//    }
-
     public void classify(FaceDetect face)  {
-        eye = new Eye(face);
-        hair = new Hair(face);
+        eye = new Eye(face, context);
+        hair = new Hair(face, context);
         shape = new Shape(face);
-        skin = new Skin(face);
+        skin = new Skin(face, context);
 
         eye.findValues();
         hair.findValues();
         shape.findValues();
         skin.findValues();
 
+        Log.d("Skin Hue", String.valueOf(skin.getValues()[0])
+                + ", " + String.valueOf(skin.getValues()[1])
+                + ", " +String.valueOf(skin.getValues()[2]));
+
         Model model = new Model(context);
         eye.setClassName(model.findClass(eye.getValues(), Model.EYE_FILE));
         hair.setClassName(model.findClass(hair.getValues(), Model.HAIR_FILE));
         shape.setClassName(model.findClass(shape.getValues(), Model.SHAPE_FILE));
-        skin.setClassName(SkinModel.findClass(skin.getValues()));
+        SkinTone tone = SkinModel.findClass(skin.getValues());
+        skin.setClassName(tone.getName());
+        skin.setTone(tone);
     }
 
 
@@ -81,7 +71,7 @@ public class UserProfile {
     }
 
     public String[] summary() {
-        return new String[]{skin.getClassName() + " skin tones",
+        return new String[]{skin.getTone().getCode(),
                 eye.getClassName() + " eyes",
                 hair.getClassName() + " hair",
                 shape.getClassName() + " face shape"};

@@ -3,6 +3,8 @@ package roryoreilly.makeuprecommender.Recommender;
 import java.util.ArrayList;
 import java.util.List;
 
+import roryoreilly.makeuprecommender.Database.Product;
+
 /**
  * Created by roryoreilly on 26/02/16.
  */
@@ -10,9 +12,9 @@ public class ProductCard {
     private String mType;
     private Integer mMainImage;
     private boolean mOnline;
-    List<ProductItem> mProductItems;
+    List<Product> mProductItems;
 
-    public ProductCard(List<ProductItem> items, String type, Integer image, boolean online) {
+    public ProductCard(List<Product> items, String type, Integer image, boolean online) {
         mProductItems = items;
         mType = type;
         mMainImage = image;
@@ -31,7 +33,7 @@ public class ProductCard {
         return mOnline;
     }
 
-    public List<ProductItem> getProductItems() {
+    public List<Product> getProductItems() {
         return mProductItems;
     }
 }

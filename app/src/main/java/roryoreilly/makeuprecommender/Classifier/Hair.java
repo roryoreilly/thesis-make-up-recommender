@@ -1,8 +1,13 @@
 package roryoreilly.makeuprecommender.Classifier;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.provider.MediaStore;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +17,8 @@ import roryoreilly.makeuprecommender.utils.WeiszfeldAlgorithm;
  * Created by roryorilly on 11/02/16.
  */
 public class Hair extends Classifier {
-    public Hair(FaceDetect face) {
-        super(face);
+    public Hair(FaceDetect face, Context context) {
+        super(face, context);
         this.values = new float[3];
     }
 
@@ -42,6 +47,14 @@ public class Hair extends Classifier {
     }
 
     private List<float[]> coloursFromLine(Point p1, Point p2) {
+        Bitmap bmp = null;
+        try {
+            bmp = MediaStore.Images.Media.getBitmap(
+                    context.getContentResolver(), face.getImg());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         List<float[]> colourSet = new ArrayList<>();
         int x = (int) p1.x, y = (int) p1.y;
         int w = (int) (p2.x-p1.x), h = (int) (p2.y-p1.y);
@@ -62,7 +75,7 @@ public class Hair extends Classifier {
         int numerator = longest >> 1;
         for (int i=0;i<=longest;i++) {
             float[] c = new float[3];
-            Color.colorToHSV(face.getImg().getPixel(x, y), c);
+            Color.colorToHSV(bmp.getPixel(x, y), c);
             if (c[0] > 6) {
                 colourSet.add(c);
             }

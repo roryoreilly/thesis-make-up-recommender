@@ -19,7 +19,7 @@
             android:text="New Text"
             android:id="@+id/product_card_title"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:gravity="center_vertical"/>
+            android:gravity="center_vertical|center_horizontal"/>
     </FrameLayout>
 
     <ImageView

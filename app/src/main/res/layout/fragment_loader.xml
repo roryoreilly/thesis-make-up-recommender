@@ -4,10 +4,17 @@
     tools:context="roryoreilly.makeuprecommender.Fragments.LoaderFragment"
     android:background="#000000">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/loaderImage"
-        android:layout_gravity="center"
-        android:src="@drawable/loading_1" />
+    <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/loaderImage"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:src="@drawable/loading_1" />-->
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="123dp"
+        android:layout_height="123dp"
+        android:id="@+id/progressBar"
+        android:layout_gravity="center" />
 </FrameLayout>

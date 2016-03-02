@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * A helper class to conveniently alter Bitmap data.
@@ -20,116 +21,16 @@ import java.io.IOException;
  * @author Ralf Gehrer <ralf@ecotastic.de>
  */
 public class BitmapHelper {
+    public static byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
 
-    /**
-     * Converts a Bitmap to a byteArray.
-     * @return byteArray
-     */
-    public static byte[] bitmapToByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        return stream.toByteArray();
-    }
-
-    /**
-     * Converts a byteArray to a Bitmap object
-     * @param byteArray
-     * @return Bitmap
-     */
-    public static Bitmap byteArrayToBitmap(byte[] byteArray) {
-        if (byteArray == null) {
-            return null;
-        } else {
-            return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
         }
-    }
-
-    /**
-     * Shrinks and a passed Bitmap.
-     *
-     * @param bm
-     * @param maxLengthOfEdge
-     * @return Bitmap
-     */
-    public static Bitmap shrinkBitmap(Bitmap bm, int maxLengthOfEdge) {
-        return shrinkBitmap(bm, maxLengthOfEdge, 0);
-    }
-
-    /**
-     * Shrinks and rotates (if necessary) a passed Bitmap.
-     *
-     * @param bm
-     * @param maxLengthOfEdge
-     * @param rotateXDegree
-     * @return Bitmap
-     */
-    public static Bitmap shrinkBitmap(Bitmap bm, int maxLengthOfEdge, int rotateXDegree) {
-        if (maxLengthOfEdge > bm.getWidth() && maxLengthOfEdge > bm.getHeight()) {
-            return bm;
-        } else {
-            // shrink image
-            float scale = (float) 1.0;
-            if (bm.getHeight() > bm.getWidth()) {
-                scale = ((float) maxLengthOfEdge) / bm.getHeight();
-            } else {
-                scale = ((float) maxLengthOfEdge) / bm.getWidth();
-            }
-            // CREATE A MATRIX FOR THE MANIPULATION
-            Matrix matrix = new Matrix();
-            // RESIZE THE BIT MAP
-            matrix.postScale(scale, scale);
-            matrix.postRotate(rotateXDegree);
-
-            // RECREATE THE NEW BITMAP
-            bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(),
-                    matrix, false);
-
-            matrix = null;
-            System.gc();
-
-            return bm;
-        }
-    }
-
-    /**
-     * Reads a Bitmap from an Uri.
-     *
-     * @param context
-     * @param selectedImage
-     * @return Bitmap
-     */
-    public static Bitmap readBitmap(Context context, Uri selectedImage) {
-        Bitmap bm = null;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        options.inScaled = false;
-//      options.inSampleSize = 3;
-        AssetFileDescriptor fileDescriptor = null;
-        try {
-            fileDescriptor = context.getContentResolver().openAssetFileDescriptor(selectedImage, "r");
-        } catch (FileNotFoundException e) {
-            return null;
-        } finally {
-            try {
-                bm = BitmapFactory.decodeFileDescriptor(
-                        fileDescriptor.getFileDescriptor(), null, options);
-                fileDescriptor.close();
-            } catch (IOException e) {
-                return null;
-            }
-        }
-        return bm;
-    }
-
-    /**
-     * Clears all Bitmap data, that is, recycles the Bitmap and
-     * triggers the garbage collection.
-     *
-     * @param bm
-     */
-    public static void clearBitmap(Bitmap bm) {
-        bm.recycle();
-        System.gc();
+        return byteBuffer.toByteArray();
     }
 
 

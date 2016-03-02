@@ -50,8 +50,8 @@ public class LoaderFragment extends Fragment {
         curImage = getArguments().getInt(IMAGE_ID);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_loader, container, false);
-        loaderImage = (ImageView) view.findViewById(R.id.loaderImage);
-        loaderImage.setImageResource(imageId[curImage]);
+//        loaderImage = (ImageView) view.findViewById(R.id.loaderImage);
+//        loaderImage.setImageResource(imageId[curImage]);
 
         return view;
     }

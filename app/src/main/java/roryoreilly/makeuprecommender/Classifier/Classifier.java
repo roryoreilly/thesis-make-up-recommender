@@ -1,13 +1,21 @@
 package roryoreilly.makeuprecommender.Classifier;
 
 
+import android.content.Context;
+
 public class Classifier {
     protected FaceDetect face;
     protected float[] values;
     protected String className;
+    protected Context context;
 
     public Classifier(FaceDetect face) {
         this.face = face;
+    }
+
+    public Classifier(FaceDetect face, Context context) {
+        this.face = face;
+        this.context = context;
     }
 
     public float[] findValues() {

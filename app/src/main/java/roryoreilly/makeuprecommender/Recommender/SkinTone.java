@@ -7,7 +7,7 @@ package roryoreilly.makeuprecommender.Recommender;
 public class SkinTone {
     private String code;
     private String name;
-    private float[] hue;
+    private float[] hsv;
 
     public SkinTone (String code) {
         this.code = code;
@@ -15,21 +15,21 @@ public class SkinTone {
 
     }
 
-    public SkinTone(String code, float[] hue) {
+    public SkinTone(String code, float[] hsv) {
         this.code = code;
         this.name = nameFromCode(code);
-        this.hue = hue;
+        this.hsv = hsv;
     }
 
     public double distance(float[] skin) {
-        return Math.sqrt(Math.pow(hue[0] - skin[0], 2)
-                        + Math.pow(hue[1] - skin[1], 2)
-                        + Math.pow(hue[2] - skin[2], 2));
+        return Math.sqrt(Math.pow(((hsv[0]/360) - skin[0])*100, 2)
+                        + Math.pow((hsv[1] - skin[1])*100, 2)
+                        + Math.pow((hsv[2] - skin[2])*100, 2));
     }
 
-    public String nameFromCode(String code) {
+    public static String nameFromCode(String code) {
         String name ="";
-        int value = Integer.valueOf(code.substring(2));
+        int value = Integer.valueOf(code.split("\\s")[1]);
         if (value <= 10) {
             name += "Pale";
         } else if (value <= 15) {
@@ -46,7 +46,7 @@ public class SkinTone {
             name += "Black";
         }
 
-        String type = code.substring(0, 1);
+        String type = code.split("\\s")[0];
         if (type.equals("NW")) {
             name += "-Cool";
         } else if (type.equals("NC")) {
