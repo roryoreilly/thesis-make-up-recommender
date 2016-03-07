@@ -34,6 +34,7 @@ import butterknife.ButterKnife;
 import roryoreilly.makeuprecommender.Classifier.FaceDetect;
 import roryoreilly.makeuprecommender.Classifier.UserProfile;
 import roryoreilly.makeuprecommender.Fragments.LoaderFragment;
+import roryoreilly.makeuprecommender.Helper.UserPackage;
 import roryoreilly.makeuprecommender.View.ProfileListAdapter;
 import roryoreilly.makeuprecommender.utils.BitmapHelper;
 
@@ -70,30 +71,10 @@ public class FaceProfileActivity extends Activity
 
         loaderInPlace = true;
 
-//        byte[] imgByte = getIntent().getExtras().getByteArray(EXTRA_IMAGE_BYTE);
-//        Bitmap img = BitmapHelper.byteArrayToBitmap(imgByte);
-//        profileImage.setImageBitmap(img);
-
         String fileSrc = getIntent().getExtras().getString(EXTRA_IMAGE_URI);
         System.out.println(fileSrc);
         Uri uri = Uri.fromFile(new File(fileSrc));
         profileImage.setImageURI(uri);
-
-//        new Thread() {
-//            public void run() {
-//                int i =0;
-//                while(loaderInPlace) {
-//                    updateLoader(i);
-//                    i++;
-//                    if(i>37) i=0;
-//                    try {
-//                        Thread.sleep(100);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        }.start();
 
         FaceClassify face = new FaceClassify(this);
 
@@ -102,85 +83,26 @@ public class FaceProfileActivity extends Activity
         /****************
                 TESTING
          ****************/
-        stylesButton.setOnClickListener(
-                new Button.OnClickListener() {
-                    public void onClick(View v) {
-                        Intent intent = new Intent(v.getContext(), StylesActivity.class);
-                        intent.putExtra(StylesActivity.EXTRA_SKIN, "NC 25");
-                        intent.putExtra(StylesActivity.EXTRA_EYE, "Blue Eyes");
-                        intent.putExtra(StylesActivity.EXTRA_HAIR, "Brown Hair");
-                        intent.putExtra(StylesActivity.EXTRA_SHAPE, "Round Face Shape");
-                        v.getContext().startActivity(intent);
-
-                    }
-                }
-        );
+//        stylesButton.setOnClickListener(
+//                new Button.OnClickListener() {
+//                    public void onClick(View v) {
+//                        Intent intent = new Intent(v.getContext(), StylesActivity.class);
+//                        intent.putExtra(StylesActivity.EXTRA_SKIN, "NC 25");
+//                        intent.putExtra(StylesActivity.EXTRA_EYE, "Blue Eyes");
+//                        intent.putExtra(StylesActivity.EXTRA_HAIR, "Brown Hair");
+//                        intent.putExtra(StylesActivity.EXTRA_SHAPE, "Round Face Shape");
+//                        v.getContext().startActivity(intent);
+//
+//                    }
+//                }
+//        );
     }
 
-
-    private void updateLoader(int i) {
-        LoaderFragment lf = new LoaderFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt("bundle_image", i);
-        lf.setArguments(bundle);
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.remove(fragmentManager.findFragmentByTag(LOADER_FRAG));
-        fragmentTransaction.add(android.R.id.content, lf, LOADER_FRAG);
-        fragmentTransaction.commit();
-    }
 
     public void onFragmentInteraction(Uri uri){
         //you can leave it empty
     }
 
-    private class LoaderAsync extends AsyncTask<Void, Integer, Boolean> {
-
-        @Override
-        protected void onPreExecute() {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            LoaderFragment loaderFragment = new LoaderFragment();
-            Bundle bundle = new Bundle();
-            bundle.putInt("bundle_image", 0);
-            loaderFragment.setArguments(bundle);
-            fragmentTransaction.add(android.R.id.content, loaderFragment, LOADER_FRAG);
-            fragmentTransaction.commit();
-        }
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            int i =0;
-            while(loaderInPlace) {
-                publishProgress(i);
-                i++;
-                if(i>37) i=0;
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return true;
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-
-            LoaderFragment lf = new LoaderFragment();
-            Bundle bundle = new Bundle();
-            bundle.putInt("bundle_image", values[0]);
-            lf.setArguments(bundle);
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.remove(fragmentManager.findFragmentByTag(LOADER_FRAG));
-            fragmentTransaction.add(android.R.id.content, lf, LOADER_FRAG);
-            fragmentTransaction.commit();
-        }
-
-        @Override
-        protected void onPostExecute(Boolean b) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.remove(fragmentManager.findFragmentByTag(LOADER_FRAG));
-            fragmentTransaction.commit();
-        }
-    }
     private class FaceClassify extends AsyncTask<Uri, Integer, FaceDetect> {
         Activity activity;
 
@@ -251,7 +173,7 @@ public class FaceProfileActivity extends Activity
             profileImage.setImageURI(uri);
 
             // adds the data from the user profile to the list view
-            final String[] userProfileSummary = user.summary();
+            String[] userProfileSummary = user.summary();
 
             ProfileListAdapter adapter = new ProfileListAdapter(activity, userProfileSummary, imgid);
             list.setAdapter(adapter);
@@ -262,14 +184,12 @@ public class FaceProfileActivity extends Activity
             fragmentTransaction.commit();
             loaderInPlace = false;
 
+            final UserPackage uPackage = user.getPackage();
             stylesButton.setOnClickListener(
                     new Button.OnClickListener() {
                         public void onClick(View v) {
                             Intent intent = new Intent(v.getContext(), StylesActivity.class);
-                            intent.putExtra(StylesActivity.EXTRA_SKIN, userProfileSummary[0]);
-                            intent.putExtra(StylesActivity.EXTRA_EYE, userProfileSummary[1]);
-                            intent.putExtra(StylesActivity.EXTRA_HAIR, userProfileSummary[2]);
-                            intent.putExtra(StylesActivity.EXTRA_SHAPE, userProfileSummary[3]);
+                            intent.putExtra(StylesActivity.EXTRA_USER, uPackage);
                             v.getContext().startActivity(intent);
 
                         }

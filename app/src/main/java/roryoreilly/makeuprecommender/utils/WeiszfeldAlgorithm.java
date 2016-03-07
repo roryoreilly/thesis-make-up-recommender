@@ -68,7 +68,7 @@ public class WeiszfeldAlgorithm {
         return new float[] {geoMed[0]/totalWeight, geoMed[1]/totalWeight, geoMed[2]/totalWeight};
     }
 
-    private static float eucDis(float[] q, float[] p) {
+    public static float eucDis(float[] q, float[] p) {
         return (float)(Math.sqrt(
                 Math.pow(q[0]-p[0], 2)
                         + Math.pow(q[1]-p[1], 2)

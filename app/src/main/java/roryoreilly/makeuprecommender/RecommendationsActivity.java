@@ -15,6 +15,7 @@ import java.util.List;
 
 import roryoreilly.makeuprecommender.Database.MySql;
 import roryoreilly.makeuprecommender.Database.Product;
+import roryoreilly.makeuprecommender.Helper.UserPackage;
 import roryoreilly.makeuprecommender.Recommender.FaceProductCard;
 import roryoreilly.makeuprecommender.Recommender.ProductCard;
 import roryoreilly.makeuprecommender.View.ProductCardAdapter;
@@ -23,8 +24,7 @@ public class RecommendationsActivity extends Activity {
     protected RecyclerViewPager mRecyclerView;
     MySql db;
 
-    String skin;
-    String eye;
+    UserPackage uPackage;
     String occasion;
 
     @Override
@@ -33,10 +33,7 @@ public class RecommendationsActivity extends Activity {
         setContentView(R.layout.activity_recommendations);
         db = new MySql(this);
 
-        skin = getIntent().getExtras().getString(StylesActivity.EXTRA_SKIN);
-        String hair = getIntent().getExtras().getString(StylesActivity.EXTRA_HAIR);
-        eye = getIntent().getExtras().getString(StylesActivity.EXTRA_EYE);
-        String shape = getIntent().getExtras().getString(StylesActivity.EXTRA_SHAPE);
+        uPackage = getIntent().getExtras().getParcelable(StylesActivity.EXTRA_USER);
         occasion = getIntent().getExtras().getString(StylesActivity.EXTRA_OCCASION);
 
         initViewPager();
@@ -52,10 +49,7 @@ public class RecommendationsActivity extends Activity {
         List<Product> items = new ArrayList<>();
 
         FaceProductCard fpc = new FaceProductCard(db);
-        items.add(fpc.getFoundation(skin));
-        items.add(fpc.getConcealer(skin));
-        items.add(fpc.getBronzer());
-        items.add(fpc.getBlush("Fair", "Warm", "Blue", "Day"));
+        ProductCard faceCard = fpc.createCard(uPackage, occasion);
 
         List<ProductCard> cards = new ArrayList<>();
         cards.add(new ProductCard(items, "Face", R.drawable.boldlips_look, true));

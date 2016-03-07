@@ -8,6 +8,7 @@ public class SkinTone {
     private String code;
     private String name;
     private float[] hsv;
+    private boolean warm;
 
     public SkinTone (String code) {
         this.code = code;
@@ -27,7 +28,7 @@ public class SkinTone {
                         + Math.pow((hsv[2] - skin[2])*100, 2));
     }
 
-    public static String nameFromCode(String code) {
+    public String nameFromCode(String code) {
         String name ="";
         int value = Integer.valueOf(code.split("\\s")[1]);
         if (value <= 10) {
@@ -49,8 +50,10 @@ public class SkinTone {
         String type = code.split("\\s")[0];
         if (type.equals("NW")) {
             name += "-Cool";
+            warm = false;
         } else if (type.equals("NC")) {
             name += "-Warm";
+            warm = true;
         }
 
         return name;
@@ -62,5 +65,9 @@ public class SkinTone {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isWarm() {
+        return warm;
     }
 }

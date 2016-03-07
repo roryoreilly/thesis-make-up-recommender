@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import roryoreilly.makeuprecommender.Helper.UserPackage;
 import roryoreilly.makeuprecommender.Model.Model;
 import roryoreilly.makeuprecommender.Model.SkinModel;
 import roryoreilly.makeuprecommender.R;
@@ -22,6 +23,7 @@ public class UserProfile {
     private Hair hair;
     private Shape shape;
     private Skin skin;
+    private Lip lip;
     private Context context;
 
 
@@ -34,11 +36,13 @@ public class UserProfile {
         hair = new Hair(face, context);
         shape = new Shape(face);
         skin = new Skin(face, context);
+        lip = new Lip(face, context);
 
         eye.findValues();
         hair.findValues();
         shape.findValues();
         skin.findValues();
+        lip.findValues();
 
         Log.d("Skin Hue", String.valueOf(skin.getValues()[0])
                 + ", " + String.valueOf(skin.getValues()[1])
@@ -75,6 +79,16 @@ public class UserProfile {
                 eye.getClassName() + " eyes",
                 hair.getClassName() + " hair",
                 shape.getClassName() + " face shape"};
+    }
+
+    public UserPackage getPackage() {
+        return new UserPackage(eye.getClassName(),
+                skin.getTone().getCode(),
+                hair.getClassName(),
+                shape.getClassName(),
+                skin.getValues(),
+                skin.getTone().isWarm(),
+                lip.getValues());
     }
 
 

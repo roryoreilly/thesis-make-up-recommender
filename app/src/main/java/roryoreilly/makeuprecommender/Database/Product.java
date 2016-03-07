@@ -16,6 +16,11 @@ public class Product {
     private float brightness;
     String rgb;
 
+    public Product(float hue, float saturation, float brightness) {
+        this.hue = hue;
+        this.saturation = saturation;
+        this.brightness = brightness;
+    }
 
     public Product(String type, String name, String description, String url, String image) {
         this.type = type;
@@ -86,5 +91,9 @@ public class Product {
 
     public String getRgb() {
         return rgb;
+    }
+
+    public float[] getHsv() {
+        return new float[]{hue, saturation, brightness};
     }
 }

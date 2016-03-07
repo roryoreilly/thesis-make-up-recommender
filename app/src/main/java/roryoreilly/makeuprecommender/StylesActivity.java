@@ -11,14 +11,12 @@ import android.widget.ListView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import roryoreilly.makeuprecommender.Helper.UserPackage;
 import roryoreilly.makeuprecommender.View.ProfileListAdapter;
 import roryoreilly.makeuprecommender.View.StylesListAdapter;
 
 public class StylesActivity extends AppCompatActivity {
-    public static final String EXTRA_SKIN = "stylesctivity.extra.skin";
-    public static final String EXTRA_HAIR = "stylesctivity.extra.hair";
-    public static final String EXTRA_EYE = "stylesctivity.extra.eye";
-    public static final String EXTRA_SHAPE = "stylesctivity.extra.shape";
+    public static final String EXTRA_USER = "stylesctivity.extra.skin";
     public static final String EXTRA_OCCASION = "stylesctivity.extra.occasion";
 
     @Bind(R.id.style_button_list) ListView listView;
@@ -34,12 +32,9 @@ public class StylesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_styles);
         ButterKnife.bind(this);
 
-        final String skin = getIntent().getExtras().getString(EXTRA_SKIN);
-        final String hair = getIntent().getExtras().getString(EXTRA_HAIR);
-        final String eye = getIntent().getExtras().getString(EXTRA_EYE);
-        final String shape = getIntent().getExtras().getString(EXTRA_SHAPE);
+        final UserPackage uPackage = getIntent().getExtras().getParcelable(EXTRA_USER);
 
-        final String[] occasionName = new String[]{"Essentials", "Going Out", "Natural"};
+        final String[] occasionName = new String[]{"Everyday", "Night", "Natural"};
         StylesListAdapter adapter = new StylesListAdapter(this, occasionName, imgid);
         listView.setAdapter(adapter);
 
@@ -48,10 +43,7 @@ public class StylesActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 String occasion = (String) v.getTag();
                 Intent intent = new Intent(v.getContext(), RecommendationsActivity.class);
-                intent.putExtra(EXTRA_SKIN, skin);
-                intent.putExtra(EXTRA_HAIR, hair);
-                intent.putExtra(EXTRA_EYE, eye);
-                intent.putExtra(EXTRA_SHAPE, shape);
+                intent.putExtra(EXTRA_USER, uPackage);
                 intent.putExtra(EXTRA_OCCASION, occasion);
                 v.getContext().startActivity(intent);
             }
