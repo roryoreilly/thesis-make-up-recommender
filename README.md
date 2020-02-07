@@ -5,18 +5,10 @@ This repo contains the report and source code used to create my android make-up 
 The repo is broken down in the report that was submitted for thesis completion and the source code which was used as the basis of the project
 
 ## Snippet of the Thesis
-### 1.2 Approach
-The approach to this this project was broken down into a number of different areas. Background research, current papers and related systems will be the first step. One of the areas of focus for this background research is to find papers on recommendation systems using facial recognition software. Extraction of skin colour, hair colour, eye colour or similar was investigated. The ability to classify an individuals’ face shape or other object shapes was also important. Machine-learning techniques to classify data and create a model for recommendation from data was researched. Finally, knowledge was sought in colour theory and facial recognition. Two areas of colour theory that are important to learn about deal with the ability to blend colours that are appealing to the eye, as well as, how the science of colour interacts with technology.
-
-Designing the project was then followed. A number of features were required for the recommender system - skin complexion, eye colour, hair colour, lip colour, and face shape. The work on designing the project was included extraction of data on each these features. Following the extraction, testing different methods of classification was done for each feature to find the most suitable.
-
-Lighting is a major problem in this project. Lighting changes based on the time of day, location of the user, and how shadows hit their face. Work will be done to resolve this problem.
-
-These features along with an occasion are used to create the makeup recommender. Every product was recommended in their own way to ensure they are suitable for the user and complement the other products.
-
-The app will be tested and evaluated to find the accuracy of the feature classification and makeup recommendation.
 
 ### 4.1 Software Overview
+![software overview](https://github.com/roryoreilly/thesis-make-up-recommender/blob/master/img/app-process.png)
+
 As the app is turned on a database of the makeup products is created. There are 800 products, in total, in the app. Each of these are taken from the Mac range and contain different information regarding each product.
 
 The app begins by getting an image of the user. This image is acquired as mentioned in the previous section. The image is passed to the next activity in the app.
